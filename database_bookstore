@@ -1,0 +1,183 @@
+# Program to use in a bookstore to add, delete, update and search for books.
+# Import library and create a database called ebookstore.
+# Create a cursor object.
+# Create a table in the database called books.
+# Add records to the table.
+import sqlite3
+db = sqlite3.connect('ebookstore.db')
+cursor = db.cursor()
+cursor.execute('''CREATE TABLE IF NOT EXISTS books([id] INTEGER PRIMARY KEY UNIQUE,
+                    [Title] TEXT,[Author] TEXT,[Qty] INTEGER)
+                    ''')
+db.commit()
+book_list = [(3001,'A Tale of Two Cities', 'Charles Dickens', 30),
+            (3002,'Harry Potter and the Philosopher\'s stone','J.K. Rowling', 40),
+            (3003,'The Lion, the Witch and the Wardrobe','C.S. Lewis', 25),
+            (3004,'The Lord of the Rings', 'J.R.R. Tolkien',37),
+            (3005,'Alice in Wonderland','Lewis Carrol',12)]
+cursor.executemany('''INSERT INTO books(id,Title,Author,Qty)
+                    VALUES(?,?,?,?)''',
+                    book_list)
+
+# Function to add a book.
+    # While loop checks that user enters the correct ID - needs to be a number and unique.
+    # Try/except block accounts for the IntegrityErrors that can occur when a non-unique number or anything other than a number is entered.
+def add_book():
+    id_state = False
+    while id_state == False:
+        try:
+            print("Please enter the information of the new book:")
+            book_id = input("ID: ")
+            book_name = input("Name: ")
+            book_author = input("Author: ")
+            book_quantity = input("Quantity: ")
+            print()
+            cursor.execute('''INSERT INTO books(id,Title,Author,Qty)
+                        VALUES (?,?,?,?)''',
+                        (book_id,book_name,book_author,book_quantity))
+            db.commit()
+            print("Book added successfully.")
+            print()
+            id_state = True
+        except sqlite3.IntegrityError:
+            print("The ID entered is not valid - it must be a unique number. Please try again.")
+            id_state = False
+
+# Funtcion to update a book.
+    # While loop ensures that the user enters an ID that exists in the database.
+        # A menu is presented to ask which part of the record the user wants to update.
+        # If the user enters anythin other than one of the given options, a message is printed and they are asked to try again.
+def update_book():
+    user_choice_state = False
+    while user_choice_state == False:
+        user_choice = input('''What do you want to update?
+        t - Title of book
+        a - Author of book
+        q - Quantity of book
+        ''').lower()
+        if user_choice == "t":
+            print("Please provide the ID of the book whose title you would like to update:")
+            book_id = input("ID: ")
+            cursor.execute('''SELECT * FROM books WHERE id = ?''', (book_id,))
+            books = cursor.fetchall()
+            if len(books) == 0:
+                print("This book does not exist in the database. Please try again.")
+                print() 
+                user_choice_state = False
+            else:
+                book_title = input("New title: ")
+                cursor.execute('''UPDATE books SET Title = ? WHERE id = ?''', (book_title,book_id))
+                db.commit()
+                print("Title successfully updated.")
+                print()
+                user_choice_state = True
+        elif user_choice == "a":
+            print("Please provide the ID of the book whose author you would like to update:")
+            book_id = input("ID: ")
+            cursor.execute('''SELECT * FROM books WHERE id = ?''', (book_id,))
+            books = cursor.fetchall()
+            if len(books) == 0:
+                print("This book does not exist in the database. Please try again.")
+                print() 
+                user_choice_state = False
+            else:
+                book_title = input("New author: ")
+                cursor.execute('''UPDATE books SET Author = ? WHERE id = ?''', (book_author,book_id))
+                db.commit()
+                print("Author successfully updated.")
+                print()
+                user_choice_state = True
+        elif user_choice == "q":
+            print("Please provide the ID of the book whose quantity you would like to update:")
+            book_id = input("ID: ")
+            cursor.execute('''SELECT * FROM books WHERE id = ?''', (book_id,))
+            books = cursor.fetchall()
+            if len(books) == 0:
+                print("This book does not exist in the database. Please try again.")
+                print() 
+                user_choice_state = False
+            else:
+                book_qty = input("New quantity: ")
+                cursor.execute('''UPDATE books SET Qty = ? WHERE id = ?''', (book_qty,book_id))
+                db.commit()
+                print("Title successfully updated.")
+                print()
+                user_choice_state = True
+        else:
+            print("You have made a wrong choice, Please Try again")
+            user_choice_state = False
+
+# Function to delete a book.
+    # While loop ensures that the user enters an ID that exists in the database.
+def delete_book():
+    delete_state = False
+    while delete_state == False:
+        print("Please provide the ID of the book you would like to delete:")
+        book_id = input("ID: ")
+        cursor.execute('''SELECT * FROM books WHERE id = ?''', (book_id,))
+        books = cursor.fetchall()
+        if len(books) == 0:
+            print("This book does not exist in the database. Please try again.")
+            print()
+            delete_state = False
+        else:
+            cursor.execute('''DELETE FROM books WHERE id = ?''', (book_id,))
+            db.commit()
+            print("Book successfully deleted.")
+            print()
+            delete_state = True
+
+# Function to search for a book.
+    # While loop ensures that the user enters an ID that exists in the database.
+    # Book record is printed out.
+def search_book():
+    search_state = False
+    while search_state == False:
+        print("Please enter the ID of the book you would like to view:")
+        book_id = input("ID: ")
+        cursor.execute('''SELECT * FROM books WHERE id = ?''', (book_id,))
+        books = cursor.fetchall()
+        if len(books) == 0:
+            print("This book does not exist in the database. Please try again.")
+            print() 
+            search_state = False
+        else:
+            cursor.execute('''SELECT * FROM books WHERE id = ?''', (book_id,))
+            db.commit()
+            print("Book found.")
+            books = cursor.fetchall()
+            print(books)
+            print()
+            search_state = True
+
+# Main menu with choices to enter, update, delete or search for a book.
+    # While loop ensures user enters the correct option.
+menu_state = False
+while menu_state == False:
+    menu = input('''Please select one of the following options:
+    e - Enter a new book
+    u - Update an existing book
+    d - Delete a book
+    s - Search for a book
+    x - Exit
+    : ''').lower()
+    print()
+    if menu == 'e':
+        add_book()
+        menu_state = False
+    elif menu == 'u':
+        update_book()
+        menu_state = False
+    elif menu == 'd':
+        delete_book()
+        menu_state = False
+    elif menu == 's':
+        search_book()
+        menu_state = False
+    elif menu == 'x':
+        print('Goodbye!!!')
+        exit()
+        menu_state = True
+    else:
+        print("You have made a wrong choice, Please Try again") 
+        menu_state = False
