@@ -28,7 +28,7 @@ This gives the user access to:
 * Update an existing book
    * The user is presented with another menu.
    
-![update menu](https://user-images.githubusercontent.com/125367266/226485167-c8aaffef-ef29-4baf-8227-f4f6c821a3e8.JPG)
+   ![update menu](https://user-images.githubusercontent.com/125367266/226485167-c8aaffef-ef29-4baf-8227-f4f6c821a3e8.JPG)
 
    * Here they can decide if they want to update the title, author or quantity.
    * They are asked for the ID of the book they want to update. If the ID exists they are asked for the new information and the book is updated.
