@@ -1,7 +1,7 @@
 # Database-in-SQLite
 
 ## Description
-An example program to create a database in SQLite to manage a bookstore which can easily be adapted to any other stock keeping scenario.
+An example program to create a database in SQLite to manage a bookstore which can easily be adapted to any other stockkeeping scenario.
 
 ## Table of Contents
 1. Installation
